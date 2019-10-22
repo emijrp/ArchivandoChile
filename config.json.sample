@@ -1,0 +1,15 @@
+{
+  "admins": [],
+  "twitter": {
+    "consumerKey": "",
+    "consumerSecret": "",
+    "accessTokenKey": "",
+    "accessTokenSecret": ""
+  },
+  "telegram": {
+    "token": "",
+    "chatid": ""
+  },
+  "lastID": 1,
+  "users": {}
+}
