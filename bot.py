@@ -34,6 +34,21 @@ MAX_USES = 5
 MAX_TRIES = 5
 
 m = open("mentions.json", 'a')
+media_hash = set()
+
+
+def load_media_hash_set():
+    try:
+        return pickle.load(open("media_hash.pickle", "rb"))
+    except (OSError, IOError) as e:
+        return set()
+
+
+def save_media_hash_set():
+    try:
+        return pickle.dump(open("media_hash.pickle", "wb"))
+    except (OSError, IOError) as e:
+        return
 
 
 def add_use(userid):
@@ -452,6 +467,8 @@ def save_in_telegram(twitter_msg, context):
     :param context: Telegram bot context
     :return: nothing
     '''
+    save_media_hash_set()
+    
     tweet_url = "https://www.twitter.com/{}/status/{}".format(
         twitter_msg.user.screen_name, twitter_msg.id)
     logging.info("Saving tweet {}".format(tweet_url))
@@ -463,31 +480,35 @@ def save_in_telegram(twitter_msg, context):
             # Individual file
             if len(twitter_msg.media) == 1:
                 m = twitter_msg.media[0]
-                if m.type == "photo":
-                    return context.bot.send_photo(config["telegram"]["chatid"],
-                                                  m.media_url_https,
-                                                  disable_notification=True,
-                                                  caption=caption)
-                elif m.type == "video":
-                    best_variant = get_best_variant(m.video_info["variants"])
-                    if best_variant is not None:
-                        return context.bot.send_video(config["telegram"]["chatid"],
-                                                      best_variant,
-                                                      disable_notification=True,
-                                                      caption=saved_url)
+                if m.id not in media_hash:
+                    media_hash.add(m.id)
+                    if m.type == "photo":
+                        return context.bot.send_photo(config["telegram"]["chatid"],
+                                                    m.media_url_https,
+                                                    disable_notification=True,
+                                                    caption=caption)
+                    elif m.type == "video":
+                        best_variant = get_best_variant(m.video_info["variants"])
+                        if best_variant is not None:
+                            return context.bot.send_video(config["telegram"]["chatid"],
+                                                        best_variant,
+                                                        disable_notification=True,
+                                                        caption=saved_url)
 
             elif len(twitter_msg.media) > 1:
                 mediaArr = []
                 for m in twitter_msg.media:
-                    if m.type == "photo":
-                        mediaArr.append(telegram.InputMediaPhoto(media=m.media_url_https,
-                                                                 caption=saved_url))
-                    elif m.type == "video":
-                        best_variant = get_best_variant(
-                            m.video_info["variants"])
-                        if best_variant is not None:
-                            mediaArr.append(telegram.InputMediaVideo(media=best_variant,
-                                                                     caption=saved_url))
+                    if m.id not in media_hash:
+                        media_hash.add(m.id)
+                        if m.type == "photo":
+                            mediaArr.append(telegram.InputMediaPhoto(media=m.media_url_https,
+                                                                    caption=saved_url))
+                        elif m.type == "video":
+                            best_variant = get_best_variant(
+                                m.video_info["variants"])
+                            if best_variant is not None:
+                                mediaArr.append(telegram.InputMediaVideo(media=best_variant,
+                                                                        caption=saved_url))
                 resps = context.bot.send_media_group(config["telegram"]["chatid"],
                                                      mediaArr,
                                                      disable_notification=True)
@@ -547,6 +568,7 @@ if __name__ == "__main__":
                       access_token_key=config["twitter"]["accessTokenKey"],
                       access_token_secret=config["twitter"]["accessTokenSecret"], tweet_mode="extended")
     updater = Updater(config["telegram"]["token"], use_context=True)
+    media_hash = load_media_hash_set()
     queue = updater.job_queue
     queue.run_repeating(main_job, interval=60, first=0)
     for cmd, callback in commands.items():
