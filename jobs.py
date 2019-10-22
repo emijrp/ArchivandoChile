@@ -38,8 +38,8 @@ def main_job(context):
                 tg = save_in_telegram(msg, context)
                 if tg is None:
                     logging.info("error saving in telegram")
-                    continue
-                confirm_save(mention.id, tg.link)
+                else:
+                    confirm_save(mention.id, tg.link)
             elif use is False:
                 confirm_error(mention.id,
                               "Hiciste muchos intentos en muy poco tiempo. "
