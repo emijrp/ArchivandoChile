@@ -19,6 +19,8 @@ def save_in_telegram(twitter_msg, context):
     logging.info("Saving tweet {}".format(tweet_url))
     if twitter_msg.media is not None:
         saved_url = archive.save_in_archive(tweet_url)
+        config.config["cached"][twitter_msg.id] = saved_url
+        config.save_config()
         location = tweets.get_geo(twitter_msg)
         caption = "{} {}".format(saved_url, location)
         if saved_url is not None:

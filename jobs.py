@@ -14,12 +14,10 @@ def main_job(context):
     :param context: TG bot context
     :return: nothing
     """
-    last_id = config.config["lastID"]
-    mentions = config.api.GetMentions(count=200, since_id=last_id, )
+    mentions = config.api.GetMentions(count=200, since_id=config.config["lastID"])
     while len(mentions) != 0:
         for mention in mentions:
-            last_id = mention.id
-            config.config["lastID"] = last_id
+            config.config["lastID"] = mention.id
             use = admin.add_use(mention.user.id)
             config.save_config()
             if use:
@@ -35,14 +33,18 @@ def main_job(context):
                 # saving tweet for debugging
                 json.dump(msg.AsDict(), config.m)
                 config.m.flush()
-                tg = save_in_telegram(msg, context)
-                if tg is None:
-                    logging.info("error saving in telegram")
-                else:
+                if msg.id in config.config["cached"]:
                     confirm_save(mention.id, tg.link)
+                else:
+                    tg = save_in_telegram(msg, context)
+                    if tg is None:
+                        logging.info("error saving in telegram")
+                    else:
+                        pass
+                        confirm_save(mention.id, tg.link)
             elif use is False:
                 confirm_error(mention.id,
                               "Hiciste muchos intentos en muy poco tiempo. "
                               "Intenta de nuevo en unos minutos o dile a otro usuario que "
                               "archive el video.")
-        mentions = config.api.GetMentions(count=200, since_id=last_id)
+        mentions = config.api.GetMentions(count=200, since_id=config.config["lastID"])

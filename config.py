@@ -45,6 +45,8 @@ def load_config():
             config["users"] = {}
         if "admins" not in config:
             config["admins"] = []
+        if "cached" not in config:
+            config["cached"] = {}
     except Exception as e:
         logging.info("globals.config.json not found")
         exit(1)
