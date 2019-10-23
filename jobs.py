@@ -38,14 +38,14 @@ def main_job(context):
                 else:
                     tg = save_in_telegram(msg, context)
                     if tg is None:
-                        msg_dict["urls"] = {"telegram_url": None, "archive_url": None }
+                        msg_dict["urls"] = {"telegram_url": None, "archive_url": None}
                         logging.info("error saving in telegram")
                     else:
                         msg_dict["urls"] = {"telegram_url": tg.link, "archive_url": tg.caption}
                         confirm_save(mention.id, tg.link)
                 # saving tweet for debugging
                 json.dump(msg_dict, config.m)
-                config.m.write("\n");
+                config.m.write("\n")
                 config.m.flush()
             elif use is False:
                 confirm_error(mention.id,

@@ -61,6 +61,7 @@ def save_in_telegram(twitter_msg, context):
                 "archive_url": saved_url,
                 "telegram_url": msg.link
             }
+            config.save_config()
         else:
             logging.info("error saving tweet {}")
         return msg
