@@ -45,6 +45,7 @@ def main_job(context):
                         confirm_save(mention.id, tg.link)
                 # saving tweet for debugging
                 json.dump(msg_dict, config.m)
+                config.m.write("\n");
                 config.m.flush()
             elif use is False:
                 confirm_error(mention.id,
