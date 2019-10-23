@@ -38,7 +38,7 @@ def save_in_telegram(twitter_msg, context):
                         msg = context.bot.send_video(config.config["telegram"]["chatid"],
                                                      best_variant,
                                                      disable_notification=True,
-                                                     caption=saved_url)
+                                                     caption=caption)
 
             elif len(twitter_msg.media) > 1:
                 mediaArr = []
