@@ -34,7 +34,7 @@ def main_job(context):
                 json.dump(msg.AsDict(), config.m)
                 config.m.flush()
                 if str(msg.id) in config.config["cached"]:
-                    logging.info("tweet {} is cached! sending cached link {}".format(msg.id, tg.link))
+                    logging.info("tweet {} is cached! sending cached link".format(msg.id))
                     confirm_save(mention.id, config.config["cached"][str(msg.id)])
                 else:
                     tg = save_in_telegram(msg, context)
