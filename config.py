@@ -48,7 +48,7 @@ def load_config():
         if "cached" not in config:
             config["cached"] = {}
     except Exception as e:
-        logging.info("globals.config.json not found")
+        logging.info("config.json not found")
         exit(1)
 
 
@@ -59,9 +59,9 @@ def save_config():
     """
     global config
     try:
-        json.dump(config, open("globals.config.json", 'w'))
+        json.dump(config, open("config.json", 'w'))
     except Exception as e:
-        logging.info("cannot save globals.config.json", e)
+        logging.info("cannot save config.json", e)
         exit(1)
 
 
