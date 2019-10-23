@@ -12,14 +12,11 @@ def confirm_save(original_id, tg_url):
     :param tg_url: Telegram URL, where the media was backed up
     :return: None
     """
-    '''
-        try:
-            config.api.PostUpdate("¡Guardado! 👍 {}".format(tg_url), in_reply_to_status_id=original_id,
-                                  auto_populate_reply_metadata=True)
-        except Exception as e:
-            logging.info(e)
-    '''
-    pass
+    try:
+        config.api.PostUpdate("¡Guardado! 👍 {}".format(tg_url), in_reply_to_status_id=original_id,
+                              auto_populate_reply_metadata=True)
+    except Exception as e:
+        logging.info(e)
 
 
 def confirm_error(original_id, msg):
