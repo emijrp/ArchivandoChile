@@ -19,26 +19,26 @@ def save_in_telegram(twitter_msg, context):
     logging.info("Saving tweet {}".format(tweet_url))
     if twitter_msg.media is not None:
         saved_url = archive.save_in_archive(tweet_url)
-        config.config["cached"][str(twitter_msg.id)] = saved_url
         config.save_config()
         location = tweets.get_geo(twitter_msg)
         caption = "{} {}".format(saved_url, location)
+        msg = None
         if saved_url is not None:
             # Individual file
             if len(twitter_msg.media) == 1:
                 m = twitter_msg.media[0]
                 if m.type == "photo":
-                    return context.bot.send_photo(config.config["telegram"]["chatid"],
-                                                  m.media_url_https,
-                                                  disable_notification=True,
-                                                  caption=caption)
+                    msg = context.bot.send_photo(config.config["telegram"]["chatid"],
+                                                 m.media_url_https,
+                                                 disable_notification=True,
+                                                 caption=caption)
                 elif m.type == "video":
                     best_variant = tweets.get_best_variant(m.video_info["variants"])
                     if best_variant is not None:
-                        return context.bot.send_video(config.config["telegram"]["chatid"],
-                                                      best_variant,
-                                                      disable_notification=True,
-                                                      caption=saved_url)
+                        msg = context.bot.send_video(config.config["telegram"]["chatid"],
+                                                     best_variant,
+                                                     disable_notification=True,
+                                                     caption=saved_url)
 
             elif len(twitter_msg.media) > 1:
                 mediaArr = []
@@ -56,6 +56,11 @@ def save_in_telegram(twitter_msg, context):
                                                      mediaArr,
                                                      disable_notification=True)
                 if len(resps) > 0:
-                    return resps[0]
+                    msg = resps[0]
+            config.config["cached"][str(twitter_msg.id)] = {
+                "archive_url": saved_url,
+                "telegram_url": msg.link
+            }
         else:
             logging.info("error saving tweet {}")
+        return msg
