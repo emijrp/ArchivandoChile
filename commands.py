@@ -178,3 +178,16 @@ def logs_callback(update, _):
     logging.info("Update from id: {}".format(update.effective_user.id))
     with open("bot.log", 'rb') as x:
         update.message.reply_document(document=x)
+
+
+@decorators.check_admin
+def rmcache_callback(update, _):
+    """
+    Delete Cache completely
+    :param update: Telegram Update
+    :param _: Telegram Context, unused
+    :return: None
+    """
+    logging.info("Update from id: {}".format(update.effective_user.id))
+    config.config["cached"] = {}
+    update.message.reply_text("Cache deleted")

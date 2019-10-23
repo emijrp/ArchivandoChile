@@ -28,6 +28,7 @@ commands = {
     'authorize': commands.authorize_callback,
     'deauthorize': commands.deauthorize_callback,
     'logs': commands.logs_callback,
+    'rmcache': commands.rmcache_callback,
 }
 
 
